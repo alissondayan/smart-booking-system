@@ -37,6 +37,13 @@ import {
   SetDateAvailabilityData,
 } from '../../src/modules/scheduling/domain/ports/availability.repository.port';
 import { SLOT_HOLD, SlotHoldPort } from '../../src/modules/scheduling/domain/ports/slot-hold.port';
+import { WaitlistEntryEntity } from '../../src/modules/waitlist/domain/entities/waitlist-entry.entity';
+import {
+  JoinWaitlistData,
+  ListWaitlistFilters,
+  WAITLIST_REPOSITORY,
+  WaitlistRepositoryPort,
+} from '../../src/modules/waitlist/domain/ports/waitlist.repository.port';
 import { AppointmentStatus } from '../../src/shared/domain/enums/appointment-status.enum';
 import { UserRole } from '../../src/shared/domain/enums/user-role.enum';
 import { RedisService } from '../../src/shared/infrastructure/cache/redis.service';
@@ -384,6 +391,40 @@ class InMemorySlotHold implements SlotHoldPort {
   }
 }
 
+class NoopWaitlistRepository implements WaitlistRepositoryPort {
+  create(_data: JoinWaitlistData): Promise<WaitlistEntryEntity> {
+    throw new Error('Not implemented in scheduling e2e');
+  }
+
+  findActiveDuplicate(
+    _data: JoinWaitlistData,
+  ): Promise<WaitlistEntryEntity | null> {
+    return Promise.resolve(null);
+  }
+
+  list(_filters: ListWaitlistFilters): Promise<WaitlistEntryEntity[]> {
+    return Promise.resolve([]);
+  }
+
+  cancelForCustomer(
+    _id: string,
+    _customerId: string,
+  ): Promise<WaitlistEntryEntity | null> {
+    return Promise.resolve(null);
+  }
+
+  findFirstActiveForSlot(
+    _serviceId: string,
+    _availableDate: Date,
+  ): Promise<WaitlistEntryEntity | null> {
+    return Promise.resolve(null);
+  }
+
+  markNotified(_id: string): Promise<WaitlistEntryEntity | null> {
+    return Promise.resolve(null);
+  }
+}
+
 describe('Scheduling (e2e)', () => {
   let app: INestApplication;
   let jwtService: JwtService;
@@ -421,6 +462,8 @@ describe('Scheduling (e2e)', () => {
       .useValue(new SchedulingAppointmentRepository())
       .overrideProvider(SLOT_HOLD)
       .useValue(new InMemorySlotHold())
+      .overrideProvider(WAITLIST_REPOSITORY)
+      .useValue(new NoopWaitlistRepository())
       .overrideProvider(PrismaService)
       .useValue(createMockPrismaService())
       .overrideProvider(RedisService)

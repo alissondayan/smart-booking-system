@@ -1,4 +1,6 @@
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { EVENT_BUS, EventBusPort } from '../../../shared/application/event-bus.port';
+import { AppointmentCancelledEvent } from '../domain/events/appointment-cancelled.event';
 import {
   APPOINTMENT_REPOSITORY,
   AppointmentRepositoryPort,
@@ -15,6 +17,8 @@ export class CancelAppointmentUseCase {
   constructor(
     @Inject(APPOINTMENT_REPOSITORY)
     private readonly appointmentRepository: AppointmentRepositoryPort,
+    @Inject(EVENT_BUS)
+    private readonly eventBus: EventBusPort,
   ) {}
 
   async execute(command: CancelAppointmentCommand): Promise<AppointmentResponse> {
@@ -34,6 +38,17 @@ export class CancelAppointmentUseCase {
       throw new NotFoundException('Appointment not found');
     }
 
-    return appointment.toJSON();
+    const appointmentData = appointment.toJSON();
+    await this.eventBus.publish(
+      new AppointmentCancelledEvent(
+        appointmentData.id,
+        appointmentData.serviceId,
+        appointmentData.customerId,
+        appointmentData.startAt,
+        appointmentData.endAt,
+      ),
+    );
+
+    return appointmentData;
   }
 }

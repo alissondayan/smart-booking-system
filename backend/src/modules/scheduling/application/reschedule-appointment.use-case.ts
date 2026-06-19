@@ -1,8 +1,10 @@
 import { BadRequestException, ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { EVENT_BUS, EventBusPort } from '../../../shared/application/event-bus.port';
 import {
   SERVICE_REPOSITORY,
   ServiceRepositoryPort,
 } from '../../catalog/domain/ports/service.repository.port';
+import { AppointmentRescheduledEvent } from '../domain/events/appointment-rescheduled.event';
 import {
   APPOINTMENT_REPOSITORY,
   AppointmentRepositoryPort,
@@ -29,6 +31,8 @@ export class RescheduleAppointmentUseCase {
     private readonly appointmentRepository: AppointmentRepositoryPort,
     @Inject(SLOT_HOLD)
     private readonly slotHold: SlotHoldPort,
+    @Inject(EVENT_BUS)
+    private readonly eventBus: EventBusPort,
     private readonly getAvailableSlotsUseCase: GetAvailableSlotsUseCase,
   ) {}
 
@@ -97,7 +101,21 @@ export class RescheduleAppointmentUseCase {
         throw new ConflictException('Slot is already booked');
       }
 
-      return appointment.toJSON();
+      const appointmentData = appointment.toJSON();
+      const previousAppointmentData = existing.toJSON();
+      await this.eventBus.publish(
+        new AppointmentRescheduledEvent(
+          appointmentData.id,
+          appointmentData.serviceId,
+          appointmentData.customerId,
+          previousAppointmentData.startAt,
+          previousAppointmentData.endAt,
+          appointmentData.startAt,
+          appointmentData.endAt,
+        ),
+      );
+
+      return appointmentData;
     } finally {
       await this.slotHold.release(existing.serviceId, command.newStartAt);
     }

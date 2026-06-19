@@ -107,6 +107,24 @@ Customer management endpoints:
 - `GET /api/v1/admin/customers`
 - `GET /api/v1/admin/customers/:id`
 
+## Phase 6 Status
+
+Implemented Waitlist + event wiring from the plan:
+
+- CUSTOMER waitlist join.
+- CUSTOMER personal waitlist listing and cancellation.
+- OWNER waitlist management view with `serviceId` and `status` filters.
+- In-process domain event bus behind `EventBusPort`.
+- Scheduling publishes appointment domain events.
+- `AppointmentCancelled` handler marks the first matching ACTIVE waitlist entry as NOTIFIED.
+
+Waitlist endpoints:
+
+- `POST /api/v1/waitlist`
+- `GET /api/v1/me/waitlist`
+- `DELETE /api/v1/me/waitlist/:id`
+- `GET /api/v1/admin/waitlist`
+
 ## Local Setup
 
 ```bash
