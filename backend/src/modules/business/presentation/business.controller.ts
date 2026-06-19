@@ -26,8 +26,10 @@ import { GetBusinessUseCase } from '../application/get-business.use-case';
 import { UpdateBusinessUseCase } from '../application/update-business.use-case';
 import { UploadLogoUseCase } from '../application/upload-logo.use-case';
 import { UpdateBusinessDto } from './dto/update-business.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Business')
+@ApiStandardErrors()
 @Controller('business')
 export class BusinessController {
   constructor(

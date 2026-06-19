@@ -19,8 +19,10 @@ import { CreateBlockedTimeDto } from './dto/create-blocked-time.dto';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { SetAvailabilityRuleDto } from './dto/set-availability-rule.dto';
 import { SetDateAvailabilityDto } from './dto/set-date-availability.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Admin Availability')
+@ApiStandardErrors()
 @Controller()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.OWNER)

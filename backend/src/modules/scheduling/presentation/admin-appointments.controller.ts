@@ -9,8 +9,10 @@ import { ListAdminAppointmentsUseCase } from '../application/list-admin-appointm
 import { AppointmentResponse } from '../application/scheduling-response';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
 import { UpdateAppointmentNotesDto } from './dto/update-appointment-notes.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Admin Appointments')
+@ApiStandardErrors()
 @Controller('admin/appointments')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.OWNER)

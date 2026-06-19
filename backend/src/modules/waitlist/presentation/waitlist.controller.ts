@@ -12,8 +12,10 @@ import { JoinWaitlistUseCase } from '../application/join-waitlist.use-case';
 import { ListWaitlistUseCase } from '../application/list-waitlist.use-case';
 import { WaitlistEntryResponse } from '../application/waitlist-response';
 import { JoinWaitlistDto } from './dto/join-waitlist.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Waitlist')
+@ApiStandardErrors()
 @Controller()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.CUSTOMER)

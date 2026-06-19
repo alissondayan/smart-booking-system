@@ -11,8 +11,10 @@ import {
   PaginatedCustomersResponseDto,
 } from './dto/customer-response.dto';
 import { ListCustomersQueryDto } from './dto/list-customers.query.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Admin Customers')
+@ApiStandardErrors()
 @Controller('admin/customers')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.OWNER)

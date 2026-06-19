@@ -100,7 +100,8 @@ export class GoogleCalendarAdapter implements CalendarPort, GoogleCalendarOAuthP
     return new google.auth.OAuth2(
       this.configService.get<string>('GOOGLE_CLIENT_ID') ?? '',
       this.configService.get<string>('GOOGLE_CLIENT_SECRET') ?? '',
-      this.configService.get<string>('GOOGLE_CALLBACK_URL') ??
+      this.configService.get<string>('GOOGLE_CALENDAR_CALLBACK_URL') ??
+        this.configService.get<string>('GOOGLE_CALLBACK_URL') ??
         'http://localhost:3000/api/v1/admin/integrations/calendar/google/callback',
     );
   }

@@ -11,8 +11,10 @@ import { ServiceResponse } from '../application/service-response';
 import { UpdateServiceUseCase } from '../application/update-service.use-case';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Admin Services')
+@ApiStandardErrors()
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.OWNER)

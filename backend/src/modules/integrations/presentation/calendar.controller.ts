@@ -6,8 +6,10 @@ import { RolesGuard } from '../../../shared/presentation/guards/roles.guard';
 import { JwtAuthGuard } from '../../identity/infrastructure/auth/jwt-auth.guard';
 import { ConnectGoogleCalendarUseCase } from '../application/connect-google-calendar.use-case';
 import { ConnectGoogleCalendarDto } from './dto/connect-google-calendar.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Admin Integrations')
+@ApiStandardErrors()
 @Controller('admin/integrations/calendar')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.OWNER)

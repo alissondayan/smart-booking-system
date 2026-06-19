@@ -7,8 +7,10 @@ import {
 } from '../../../shared/presentation/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../identity/infrastructure/auth/jwt-auth.guard';
 import { GenerateIcsUseCase } from '../application/generate-ics.use-case';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('ICS')
+@ApiStandardErrors()
 @Controller('appointments')
 export class IcsController {
   constructor(private readonly generateIcsUseCase: GenerateIcsUseCase) {}

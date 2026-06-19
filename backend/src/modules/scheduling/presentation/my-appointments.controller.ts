@@ -14,8 +14,10 @@ import { RescheduleAppointmentUseCase } from '../application/reschedule-appointm
 import { AppointmentResponse } from '../application/scheduling-response';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
 import { RescheduleAppointmentDto } from './dto/reschedule-appointment.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('My Appointments')
+@ApiStandardErrors()
 @Controller('me/appointments')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.CUSTOMER)

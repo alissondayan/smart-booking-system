@@ -1,5 +1,5 @@
 # Smart Booking System
 
-Backend v1 is being implemented phase by phase according to `docs/backend-v1-plan.md`.
+Backend v1 has been implemented phase by phase according to `docs/backend-v1-plan.md`.
 
-Current backend phase: Phase 8 integrations.
+See `backend/README.md` for setup, environment variables, Docker, Swagger, API inventory, and verification commands.

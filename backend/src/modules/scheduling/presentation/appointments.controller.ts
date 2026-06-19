@@ -11,8 +11,10 @@ import { JwtAuthGuard } from '../../identity/infrastructure/auth/jwt-auth.guard'
 import { BookAppointmentUseCase } from '../application/book-appointment.use-case';
 import { AppointmentResponse } from '../application/scheduling-response';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Appointments')
+@ApiStandardErrors()
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly bookAppointmentUseCase: BookAppointmentUseCase) {}

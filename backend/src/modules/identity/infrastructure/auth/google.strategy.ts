@@ -21,6 +21,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         configService.get<string>('GOOGLE_CLIENT_SECRET') ??
         'google-client-secret-not-configured',
       callbackURL:
+        configService.get<string>('GOOGLE_AUTH_CALLBACK_URL') ??
         configService.get<string>('GOOGLE_CALLBACK_URL') ??
         'http://localhost:3000/api/v1/auth/google/callback',
       scope: ['email', 'profile'],

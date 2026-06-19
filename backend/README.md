@@ -1,83 +1,108 @@
 # Smart Booking System Backend
 
-NestJS + TypeScript backend for the Smart Booking System.
+NestJS + TypeScript backend for the Smart Booking System v1. The implementation follows `docs/backend-v1-plan.md`: modular monolith, Clean Architecture boundaries, Prisma/PostgreSQL, Redis, BullMQ, JWT auth, dynamic scheduling, waitlist, notifications, Google Calendar sync, and ICS export.
 
-## Phase 1 Status
+## Local Development
 
-Implemented scaffold and shared infrastructure from `docs/backend-v1-plan.md`:
+```bash
+npm install
+cp .env.example .env
+docker compose up -d
+npm run prisma:migrate
+npm run start:dev
+```
 
-- NestJS application scaffold with strict TypeScript.
-- PostgreSQL 16 and Redis 7 Docker Compose services.
-- Prisma schema for all v1 entities from the planning document.
-- Shared infrastructure modules for Prisma, Redis, BullMQ, encryption, validation, error handling, roles, and pagination.
-- Health endpoint at `GET /api/v1/health`.
-- Swagger UI at `GET /api/docs`.
+API base path: `http://localhost:3000/api/v1`  
+Swagger UI: `http://localhost:3000/api/docs`
 
-## Phase 2 Status
+## Docker Setup
 
-Implemented Identity from the plan:
+`docker-compose.yml` starts:
 
-- `User` domain entity and repository port.
-- Email/password register and login.
-- JWT access token strategy and guard.
-- Hashed refresh token persistence with rotation on refresh.
-- Logout refresh-token revocation.
-- Google OAuth Passport strategy and callback structure.
-- `CurrentUser`, `Roles`, `RolesGuard`, and JWT guard foundation for CUSTOMER / OWNER access.
+- PostgreSQL 16 at `localhost:5432`
+- Redis 7 at `localhost:6379`
 
-Identity endpoints:
+Useful commands:
 
+```bash
+docker compose up -d
+docker compose ps
+docker compose down
+```
+
+## Environment Variables
+
+- `DATABASE_URL`: PostgreSQL connection string used by Prisma.
+- `REDIS_URL`: Redis connection string for slot holds and BullMQ.
+- `JWT_SECRET`: JWT access token signing secret.
+- `JWT_REFRESH_SECRET`: Reserved refresh-token secret setting.
+- `JWT_ACCESS_EXPIRES_IN`: Access token TTL, default `15m`.
+- `JWT_REFRESH_EXPIRES_DAYS`: Refresh token TTL in days, default `30`.
+- `ENCRYPTION_SECRET`: Secret used to encrypt persisted OAuth tokens.
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID.
+- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret.
+- `GOOGLE_CALLBACK_URL`: Backward-compatible Google auth callback fallback.
+- `GOOGLE_AUTH_CALLBACK_URL`: Google login callback URL.
+- `GOOGLE_CALENDAR_CALLBACK_URL`: Google Calendar OAuth callback URL.
+- `SMTP_HOST`: SMTP host for Nodemailer.
+- `SMTP_PORT`: SMTP port, usually `587`.
+- `SMTP_SECURE`: `true` for SMTPS.
+- `SMTP_USER`: SMTP username.
+- `SMTP_PASS`: SMTP password.
+- `SMTP_FROM`: Sender email address.
+- `BUSINESS_TIMEZONE`: Default business timezone, `Asia/Jerusalem`.
+- `PORT`: NestJS HTTP port, default `3000`.
+
+## Implemented Modules
+
+- `identity`: register, login, refresh token, Google auth structure, JWT guards, roles.
+- `business`: single-tenant business profile and local logo upload.
+- `catalog`: public services and owner service management.
+- `scheduling`: availability, slots, booking, cancellation, rescheduling, admin calendar.
+- `customers`: owner customer list and appointment history.
+- `waitlist`: customer waitlist and cancellation-event processing.
+- `notifications`: email queue, SMTP adapter, booking/cancellation emails.
+- `integrations`: Google Calendar connection/sync and ICS export.
+- `health`: DB/Redis health endpoint.
+
+## API Inventory
+
+### Public APIs
+
+- `GET /api/v1/health`
+- `GET /api/docs`
 - `POST /api/v1/auth/register`
 - `POST /api/v1/auth/login`
 - `GET /api/v1/auth/google`
 - `GET /api/v1/auth/google/callback`
 - `POST /api/v1/auth/refresh`
-- `POST /api/v1/auth/logout`
-- `GET /api/v1/auth/me`
-
-## Phase 3 Status
-
-Implemented Business + Catalog from the plan:
-
-- Public business profile read.
-- OWNER-only business profile update.
-- OWNER-only business logo upload through `StoragePort` and local storage adapter.
-- Public active service catalog reads.
-- OWNER-only admin service create, update, list-all, and soft delete.
-
-Business and Catalog endpoints:
-
 - `GET /api/v1/business`
-- `PUT /api/v1/business`
-- `POST /api/v1/business/logo`
 - `GET /api/v1/services`
 - `GET /api/v1/services/:id`
-- `GET /api/v1/admin/services`
-- `POST /api/v1/admin/services`
-- `PATCH /api/v1/admin/services/:id`
-- `DELETE /api/v1/admin/services/:id`
-
-## Phase 4 Status
-
-Implemented Scheduling Core from the plan:
-
-- Weekly availability rules.
-- Date-specific availability overrides.
-- Blocked times and holidays.
-- Public slot generation through replaceable `SlotStrategy`.
-- `SimpleSlotStrategy` for chronological v1 ordering.
-- Customer booking, cancel, reschedule, and appointment listing.
-- Owner appointment calendar, cancel, and notes management.
-- Anti double-booking with Redis slot holds plus Serializable transaction overlap checks.
-
-Scheduling endpoints:
-
 - `GET /api/v1/availability`
+
+### Customer APIs
+
 - `POST /api/v1/appointments`
+- `GET /api/v1/appointments/:id/ics`
 - `GET /api/v1/me/appointments`
 - `GET /api/v1/me/appointments/:id`
 - `PATCH /api/v1/me/appointments/:id/cancel`
 - `PATCH /api/v1/me/appointments/:id/reschedule`
+- `POST /api/v1/waitlist`
+- `GET /api/v1/me/waitlist`
+- `DELETE /api/v1/me/waitlist/:id`
+- `POST /api/v1/auth/logout`
+- `GET /api/v1/auth/me`
+
+### Owner/Admin APIs
+
+- `PUT /api/v1/business`
+- `POST /api/v1/business/logo`
+- `GET /api/v1/admin/services`
+- `POST /api/v1/admin/services`
+- `PATCH /api/v1/admin/services/:id`
+- `DELETE /api/v1/admin/services/:id`
 - `GET /api/v1/admin/appointments`
 - `GET /api/v1/admin/appointments/:id`
 - `PATCH /api/v1/admin/appointments/:id/cancel`
@@ -93,81 +118,42 @@ Scheduling endpoints:
 - `GET /api/v1/admin/holidays`
 - `POST /api/v1/admin/holidays`
 - `DELETE /api/v1/admin/holidays/:id`
-
-## Phase 5 Status
-
-Implemented Customers from the plan:
-
-- OWNER-only customer list with search and pagination.
-- OWNER-only customer details with appointment history.
-- Customers repository behind a module port.
-
-Customer management endpoints:
-
 - `GET /api/v1/admin/customers`
 - `GET /api/v1/admin/customers/:id`
-
-## Phase 6 Status
-
-Implemented Waitlist + event wiring from the plan:
-
-- CUSTOMER waitlist join.
-- CUSTOMER personal waitlist listing and cancellation.
-- OWNER waitlist management view with `serviceId` and `status` filters.
-- In-process domain event bus behind `EventBusPort`.
-- Scheduling publishes appointment domain events.
-- `AppointmentCancelled` handler marks the first matching ACTIVE waitlist entry as NOTIFIED.
-
-Waitlist endpoints:
-
-- `POST /api/v1/waitlist`
-- `GET /api/v1/me/waitlist`
-- `DELETE /api/v1/me/waitlist/:id`
 - `GET /api/v1/admin/waitlist`
-
-## Phase 7 Status
-
-Implemented Notifications from the plan:
-
-- `EmailPort` domain port.
-- Nodemailer SMTP adapter.
-- BullMQ `email-notifications` queue processor.
-- Booking confirmation email handler on `AppointmentBooked`.
-- Cancellation confirmation email handler on `AppointmentCancelled`.
-- HTML templates for booking and cancellation emails.
-- Queue retry configuration with 3 attempts.
-
-## Phase 8 Status
-
-Implemented Integrations from the plan:
-
-- Google Calendar OAuth connect/status/disconnect.
-- Encrypted Google Calendar token persistence.
-- Calendar sync queue on appointment booked/cancelled/rescheduled events.
-- Google Calendar adapter behind `CalendarPort`.
-- ICS export for appointments.
-
-Integration endpoints:
-
 - `GET /api/v1/admin/integrations/calendar`
 - `POST /api/v1/admin/integrations/calendar/google/connect`
 - `GET /api/v1/admin/integrations/calendar/google/callback`
 - `DELETE /api/v1/admin/integrations/calendar`
-- `GET /api/v1/appointments/:id/ics`
 
-## Local Setup
+## Swagger Status
 
-```bash
-npm install
-cp .env.example .env
-docker compose up -d
-npm run prisma:migrate
-npm run start:dev
-```
+Swagger is enabled at `/api/docs` and includes:
 
-## Verification
+- Controller tags by bounded context.
+- DTO validation metadata from `class-validator`.
+- Bearer auth metadata on protected endpoints.
+- File upload schema for business logo upload.
+- Standard documented error envelope for validation, auth, forbidden, not found, and conflict responses.
+
+## Testing
 
 ```bash
 npm run build
+npm test
 npm run test:e2e
 ```
+
+Current coverage includes:
+
+- Unit specs for notification handlers/processors and integration ICS/calendar sync.
+- E2E specs for auth, health, business/catalog, scheduling, customers, waitlist, and DTO validation.
+
+## Known Limitations
+
+- Single-tenant only; no `tenant_id` or marketplace model.
+- `SimpleSlotStrategy` only; no AI or smart optimization in v1.
+- Local logo storage only; S3 is a future adapter.
+- In-process event bus in v1; not distributed across multiple API instances.
+- Calendar sync depends on Google OAuth configuration and runs asynchronously.
+- SMS/WhatsApp/push notifications are not included in v1.

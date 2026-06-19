@@ -22,8 +22,10 @@ import { AuthResponseDto, AuthUserResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Auth')
+@ApiStandardErrors()
 @Controller('auth')
 export class AuthController {
   constructor(
