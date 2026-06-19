@@ -137,6 +137,24 @@ Implemented Notifications from the plan:
 - HTML templates for booking and cancellation emails.
 - Queue retry configuration with 3 attempts.
 
+## Phase 8 Status
+
+Implemented Integrations from the plan:
+
+- Google Calendar OAuth connect/status/disconnect.
+- Encrypted Google Calendar token persistence.
+- Calendar sync queue on appointment booked/cancelled/rescheduled events.
+- Google Calendar adapter behind `CalendarPort`.
+- ICS export for appointments.
+
+Integration endpoints:
+
+- `GET /api/v1/admin/integrations/calendar`
+- `POST /api/v1/admin/integrations/calendar/google/connect`
+- `GET /api/v1/admin/integrations/calendar/google/callback`
+- `DELETE /api/v1/admin/integrations/calendar`
+- `GET /api/v1/appointments/:id/ics`
+
 ## Local Setup
 
 ```bash

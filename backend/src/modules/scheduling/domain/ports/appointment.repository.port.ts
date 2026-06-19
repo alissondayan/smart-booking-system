@@ -29,4 +29,8 @@ export interface AppointmentRepositoryPort {
     endAt: Date,
   ): Promise<AppointmentEntity | null>;
   updateNotes(id: string, notes: string | null): Promise<AppointmentEntity | null>;
+  updateGoogleEventId(
+    id: string,
+    googleEventId: string | null,
+  ): Promise<AppointmentEntity | null>;
 }

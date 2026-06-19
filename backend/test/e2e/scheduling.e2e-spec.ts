@@ -375,6 +375,26 @@ class SchedulingAppointmentRepository implements AppointmentRepositoryPort {
 
     return updated;
   }
+
+  async updateGoogleEventId(
+    id: string,
+    googleEventId: string | null,
+  ): Promise<AppointmentEntity | null> {
+    const appointment = this.appointments.get(id);
+
+    if (!appointment) {
+      return null;
+    }
+
+    const updated = new AppointmentEntity({
+      ...appointment.toJSON(),
+      googleEventId,
+      updatedAt: new Date(),
+    });
+    this.appointments.set(id, updated);
+
+    return updated;
+  }
 }
 
 class InMemorySlotHold implements SlotHoldPort {

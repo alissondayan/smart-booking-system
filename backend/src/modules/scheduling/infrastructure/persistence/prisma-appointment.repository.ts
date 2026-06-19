@@ -151,6 +151,24 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryPort {
     return this.toDomain(appointment);
   }
 
+  async updateGoogleEventId(
+    id: string,
+    googleEventId: string | null,
+  ): Promise<AppointmentEntity | null> {
+    const existing = await this.findById(id);
+
+    if (!existing) {
+      return null;
+    }
+
+    const appointment = await this.prismaService.appointment.update({
+      where: { id },
+      data: { googleEventId },
+    });
+
+    return this.toDomain(appointment);
+  }
+
   private overlapWhere(startAt: Date, endAt: Date): Prisma.AppointmentWhereInput {
     return {
       status: PrismaAppointmentStatus.CONFIRMED,

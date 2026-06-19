@@ -62,5 +62,6 @@ import { MyAppointmentsController } from './presentation/my-appointments.control
       useClass: SimpleSlotStrategy,
     },
   ],
+  exports: [APPOINTMENT_REPOSITORY],
 })
 export class SchedulingModule {}
