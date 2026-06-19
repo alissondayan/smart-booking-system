@@ -7,6 +7,7 @@ import { BullMqInfrastructureModule } from './shared/infrastructure/queue/bullmq
 import { IdentityModule } from './modules/identity/identity.module';
 import { BusinessModule } from './modules/business/business.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
+import { SchedulingModule } from './modules/scheduling/scheduling.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CatalogModule } from './modules/catalog/catalog.module';
     IdentityModule,
     BusinessModule,
     CatalogModule,
+    SchedulingModule,
   ],
 })
 export class AppModule {}

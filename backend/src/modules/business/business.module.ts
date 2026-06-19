@@ -23,5 +23,6 @@ import { BusinessController } from './presentation/business.controller';
       useClass: LocalStorageAdapter,
     },
   ],
+  exports: [BUSINESS_REPOSITORY],
 })
 export class BusinessModule {}

@@ -20,5 +20,6 @@ import { ServicesController } from './presentation/services.controller';
       useClass: PrismaServiceRepository,
     },
   ],
+  exports: [SERVICE_REPOSITORY],
 })
 export class CatalogModule {}

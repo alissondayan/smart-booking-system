@@ -57,6 +57,43 @@ Business and Catalog endpoints:
 - `PATCH /api/v1/admin/services/:id`
 - `DELETE /api/v1/admin/services/:id`
 
+## Phase 4 Status
+
+Implemented Scheduling Core from the plan:
+
+- Weekly availability rules.
+- Date-specific availability overrides.
+- Blocked times and holidays.
+- Public slot generation through replaceable `SlotStrategy`.
+- `SimpleSlotStrategy` for chronological v1 ordering.
+- Customer booking, cancel, reschedule, and appointment listing.
+- Owner appointment calendar, cancel, and notes management.
+- Anti double-booking with Redis slot holds plus Serializable transaction overlap checks.
+
+Scheduling endpoints:
+
+- `GET /api/v1/availability`
+- `POST /api/v1/appointments`
+- `GET /api/v1/me/appointments`
+- `GET /api/v1/me/appointments/:id`
+- `PATCH /api/v1/me/appointments/:id/cancel`
+- `PATCH /api/v1/me/appointments/:id/reschedule`
+- `GET /api/v1/admin/appointments`
+- `GET /api/v1/admin/appointments/:id`
+- `PATCH /api/v1/admin/appointments/:id/cancel`
+- `PATCH /api/v1/admin/appointments/:id/notes`
+- `GET /api/v1/admin/availability/rules`
+- `PUT /api/v1/admin/availability/rules`
+- `GET /api/v1/admin/availability/dates`
+- `PUT /api/v1/admin/availability/dates/:date`
+- `DELETE /api/v1/admin/availability/dates/:date`
+- `GET /api/v1/admin/blocked-times`
+- `POST /api/v1/admin/blocked-times`
+- `DELETE /api/v1/admin/blocked-times/:id`
+- `GET /api/v1/admin/holidays`
+- `POST /api/v1/admin/holidays`
+- `DELETE /api/v1/admin/holidays/:id`
+
 ## Local Setup
 
 ```bash
