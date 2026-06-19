@@ -47,6 +47,6 @@ import { AuthController } from './presentation/auth.controller';
       useClass: JwtTokenService,
     },
   ],
-  exports: [JwtAuthGuard, GoogleAuthGuard],
+  exports: [JwtAuthGuard, GoogleAuthGuard, USER_REPOSITORY],
 })
 export class IdentityModule {}

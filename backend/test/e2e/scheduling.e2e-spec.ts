@@ -11,6 +11,11 @@ import {
   UpsertBusinessData,
 } from '../../src/modules/business/domain/ports/business.repository.port';
 import { ServiceEntity } from '../../src/modules/catalog/domain/entities/service.entity';
+import { UserEntity } from '../../src/modules/identity/domain/entities/user.entity';
+import {
+  USER_REPOSITORY,
+  UserRepositoryPort,
+} from '../../src/modules/identity/domain/ports/user.repository.port';
 import {
   CreateServiceData,
   SERVICE_REPOSITORY,
@@ -425,6 +430,22 @@ class NoopWaitlistRepository implements WaitlistRepositoryPort {
   }
 }
 
+class SchedulingUserRepository implements Pick<UserRepositoryPort, 'findById'> {
+  findById(id: string): Promise<UserEntity | null> {
+    return Promise.resolve(
+      new UserEntity({
+        id,
+        email: 'customer@example.com',
+        role: UserRole.CUSTOMER,
+        firstName: 'Dana',
+        lastName: 'Cohen',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+  }
+}
+
 describe('Scheduling (e2e)', () => {
   let app: INestApplication;
   let jwtService: JwtService;
@@ -464,6 +485,8 @@ describe('Scheduling (e2e)', () => {
       .useValue(new InMemorySlotHold())
       .overrideProvider(WAITLIST_REPOSITORY)
       .useValue(new NoopWaitlistRepository())
+      .overrideProvider(USER_REPOSITORY)
+      .useValue(new SchedulingUserRepository())
       .overrideProvider(PrismaService)
       .useValue(createMockPrismaService())
       .overrideProvider(RedisService)

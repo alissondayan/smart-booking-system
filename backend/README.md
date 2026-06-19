@@ -125,6 +125,18 @@ Waitlist endpoints:
 - `DELETE /api/v1/me/waitlist/:id`
 - `GET /api/v1/admin/waitlist`
 
+## Phase 7 Status
+
+Implemented Notifications from the plan:
+
+- `EmailPort` domain port.
+- Nodemailer SMTP adapter.
+- BullMQ `email-notifications` queue processor.
+- Booking confirmation email handler on `AppointmentBooked`.
+- Cancellation confirmation email handler on `AppointmentCancelled`.
+- HTML templates for booking and cancellation emails.
+- Queue retry configuration with 3 attempts.
+
 ## Local Setup
 
 ```bash

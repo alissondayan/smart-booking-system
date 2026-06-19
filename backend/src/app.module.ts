@@ -11,6 +11,7 @@ import { CatalogModule } from './modules/catalog/catalog.module';
 import { SchedulingModule } from './modules/scheduling/scheduling.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { WaitlistModule } from './modules/waitlist/waitlist.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { WaitlistModule } from './modules/waitlist/waitlist.module';
     SchedulingModule,
     CustomersModule,
     WaitlistModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}
