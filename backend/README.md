@@ -94,6 +94,19 @@ Scheduling endpoints:
 - `POST /api/v1/admin/holidays`
 - `DELETE /api/v1/admin/holidays/:id`
 
+## Phase 5 Status
+
+Implemented Customers from the plan:
+
+- OWNER-only customer list with search and pagination.
+- OWNER-only customer details with appointment history.
+- Customers repository behind a module port.
+
+Customer management endpoints:
+
+- `GET /api/v1/admin/customers`
+- `GET /api/v1/admin/customers/:id`
+
 ## Local Setup
 
 ```bash
