@@ -1,0 +1,6 @@
+export enum WaitlistStatus {
+  ACTIVE = 'ACTIVE',
+  NOTIFIED = 'NOTIFIED',
+  FULFILLED = 'FULFILLED',
+  CANCELLED = 'CANCELLED',
+}

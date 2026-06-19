@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  OWNER
+}
+
+enum AppointmentStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum WaitlistStatus {
+  ACTIVE
+  NOTIFIED
+  FULFILLED
+  CANCELLED
+}
+
+enum CalendarProvider {
+  GOOGLE
+}
+
+model User {
+  id             String          @id @default(uuid()) @db.Uuid
+  email          String          @unique
+  passwordHash   String?
+  googleId       String?         @unique
+  role           UserRole
+  firstName      String
+  lastName       String
+  phone          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  refreshTokens  RefreshToken[]
+  appointments   Appointment[]
+  waitlistEntries WaitlistEntry[]
+
+  @@index([role])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  tokenHash String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Business {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  logoUrl     String?
+  description String?
+  phone       String
+  email       String
+  address     String?
+  website     String?
+  socialLinks Json?
+  timezone    String   @default("Asia/Jerusalem")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id              String          @id @default(uuid()) @db.Uuid
+  name            String
+  description     String?
+  durationMinutes Int
+  price           Decimal         @db.Decimal(10, 2)
+  isActive        Boolean         @default(true)
+  sortOrder       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  appointments    Appointment[]
+  waitlistEntries WaitlistEntry[]
+
+  @@index([isActive, sortOrder])
+}
+
+model AvailabilityRule {
+  id        String   @id @default(uuid()) @db.Uuid
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dayOfWeek, isActive])
+}
+
+model DateAvailability {
+  id        String   @id @default(uuid()) @db.Uuid
+  date      DateTime @unique @db.Date
+  startTime String
+  endTime   String
+  isClosed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BlockedTime {
+  id        String   @id @default(uuid()) @db.Uuid
+  startAt   DateTime
+  endAt     DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([startAt, endAt])
+}
+
+model Holiday {
+  id        String   @id @default(uuid()) @db.Uuid
+  date      DateTime @unique @db.Date
+  label     String?
+  createdAt DateTime @default(now())
+}
+
+model Appointment {
+  id            String            @id @default(uuid()) @db.Uuid
+  serviceId     String            @db.Uuid
+  customerId    String            @db.Uuid
+  startAt       DateTime
+  endAt         DateTime
+  status        AppointmentStatus @default(CONFIRMED)
+  notes         String?
+  version       Int               @default(1)
+  googleEventId String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  service       Service           @relation(fields: [serviceId], references: [id])
+  customer      User              @relation(fields: [customerId], references: [id])
+
+  @@index([startAt, endAt])
+  @@index([customerId])
+  @@index([status])
+  @@index([serviceId, startAt])
+  @@index([startAt, endAt, status])
+}
+
+model WaitlistEntry {
+  id            String         @id @default(uuid()) @db.Uuid
+  serviceId     String         @db.Uuid
+  customerId    String         @db.Uuid
+  preferredDate DateTime?      @db.Date
+  status        WaitlistStatus @default(ACTIVE)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  service       Service        @relation(fields: [serviceId], references: [id])
+  customer      User           @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([serviceId, status])
+  @@index([preferredDate])
+}
+
+model CalendarIntegration {
+  id             String           @id @default(uuid()) @db.Uuid
+  provider       CalendarProvider
+  accessToken    String
+  refreshToken   String
+  tokenExpiresAt DateTime
+  calendarId     String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([provider])
+}
