@@ -4,6 +4,7 @@ import { HealthModule } from './modules/health/health.module';
 import { PrismaModule } from './shared/infrastructure/database/prisma.module';
 import { RedisModule } from './shared/infrastructure/cache/redis.module';
 import { BullMqInfrastructureModule } from './shared/infrastructure/queue/bullmq.module';
+import { IdentityModule } from './modules/identity/identity.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BullMqInfrastructureModule } from './shared/infrastructure/queue/bullmq
     RedisModule,
     BullMqInfrastructureModule,
     HealthModule,
+    IdentityModule,
   ],
 })
 export class AppModule {}

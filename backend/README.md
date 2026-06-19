@@ -13,6 +13,28 @@ Implemented scaffold and shared infrastructure from `docs/backend-v1-plan.md`:
 - Health endpoint at `GET /api/v1/health`.
 - Swagger UI at `GET /api/docs`.
 
+## Phase 2 Status
+
+Implemented Identity from the plan:
+
+- `User` domain entity and repository port.
+- Email/password register and login.
+- JWT access token strategy and guard.
+- Hashed refresh token persistence with rotation on refresh.
+- Logout refresh-token revocation.
+- Google OAuth Passport strategy and callback structure.
+- `CurrentUser`, `Roles`, `RolesGuard`, and JWT guard foundation for CUSTOMER / OWNER access.
+
+Identity endpoints:
+
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/google`
+- `GET /api/v1/auth/google/callback`
+- `POST /api/v1/auth/refresh`
+- `POST /api/v1/auth/logout`
+- `GET /api/v1/auth/me`
+
 ## Local Setup
 
 ```bash

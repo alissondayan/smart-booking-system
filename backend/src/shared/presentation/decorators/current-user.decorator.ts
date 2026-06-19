@@ -1,9 +1,10 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { UserRole } from '../../domain/enums/user-role.enum';
 
 export interface AuthenticatedUser {
   id: string;
   email: string;
-  role: string;
+  role: UserRole;
 }
 
 export const CurrentUser = createParamDecorator(
