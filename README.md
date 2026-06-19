@@ -2,4 +2,4 @@
 
 Backend v1 is being implemented phase by phase according to `docs/backend-v1-plan.md`.
 
-Current backend phase: Phase 2 identity.
+Current backend phase: Phase 3 business and catalog.

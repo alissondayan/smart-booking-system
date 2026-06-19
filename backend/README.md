@@ -35,6 +35,28 @@ Identity endpoints:
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/auth/me`
 
+## Phase 3 Status
+
+Implemented Business + Catalog from the plan:
+
+- Public business profile read.
+- OWNER-only business profile update.
+- OWNER-only business logo upload through `StoragePort` and local storage adapter.
+- Public active service catalog reads.
+- OWNER-only admin service create, update, list-all, and soft delete.
+
+Business and Catalog endpoints:
+
+- `GET /api/v1/business`
+- `PUT /api/v1/business`
+- `POST /api/v1/business/logo`
+- `GET /api/v1/services`
+- `GET /api/v1/services/:id`
+- `GET /api/v1/admin/services`
+- `POST /api/v1/admin/services`
+- `PATCH /api/v1/admin/services/:id`
+- `DELETE /api/v1/admin/services/:id`
+
 ## Local Setup
 
 ```bash
