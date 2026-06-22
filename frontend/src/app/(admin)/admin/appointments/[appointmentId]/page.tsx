@@ -1,9 +1,11 @@
-import { EmptyState } from "@/shared/ui/empty-state";
-
+"use client";
+import { useParams } from "next/navigation";
+import { AdminAppointmentDetail } from "@/features/admin/appointments/components/admin-appointment-detail";
 export default function Page() {
+  const params = useParams<{ appointmentId: string }>();
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <EmptyState title="Owner appointment detail shell" description="Appointment detail management is deferred to Phase 3." />
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <AdminAppointmentDetail appointmentId={params.appointmentId} />
     </main>
   );
 }

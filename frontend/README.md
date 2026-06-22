@@ -4,7 +4,7 @@ Next.js client foundation for the Smart Booking System.
 
 ## Implemented Scope
 
-This frontend currently contains the Phase 1 foundation and Phase 2 customer booking flow:
+This frontend currently contains the Phase 1 foundation, Phase 2 customer booking flow, and Phase 3 owner/admin console:
 
 - Next.js App Router setup.
 - Public, customer, and owner route shells.
@@ -18,8 +18,16 @@ This frontend currently contains the Phase 1 foundation and Phase 2 customer boo
 - Booking creation and confirmation using authenticated backend APIs.
 - Login and registration forms using backend auth APIs.
 - Customer dashboard, appointments list, appointment detail, cancellation, profile, and waitlist views.
+- Owner dashboard with operational summary.
+- Owner services management with create, edit, activate, and deactivate actions.
+- Owner availability management for weekly rules, date overrides, blocked times, and holidays.
+- Owner appointment list/detail, cancellation, and notes editing.
+- Owner customer list/detail with appointment history.
+- Owner waitlist overview.
+- Owner business profile and logo upload.
+- Owner calendar integration status/connect/disconnect controls.
 
-Business management, owner dashboards, notifications, analytics, payments, staff, and calendar views are intentionally deferred to later phases.
+Notifications center, analytics, payments, staff, and calendar day/week/month views are intentionally deferred to later phases.
 
 ## Local Development
 
@@ -47,3 +55,16 @@ The Next.js config includes a local rewrite from `/api/backend/*` to the backend
 - `/account/appointments`: customer appointment list.
 - `/account/appointments/[appointmentId]`: appointment details and cancellation.
 - `/account/waitlist`: customer waitlist entries.
+
+## Owner/Admin Routes
+
+- `/admin`: owner dashboard.
+- `/admin/services`: services management.
+- `/admin/availability`: availability management.
+- `/admin/appointments`: appointment management.
+- `/admin/appointments/[appointmentId]`: appointment detail and notes.
+- `/admin/customers`: customer list.
+- `/admin/customers/[customerId]`: customer detail and appointment history.
+- `/admin/waitlist`: waitlist overview.
+- `/admin/business`: business profile and logo.
+- `/admin/integrations`: calendar integration controls.

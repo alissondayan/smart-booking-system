@@ -16,7 +16,12 @@ export const endpoints = {
   admin: {
     services: "/admin/services",
     appointments: "/admin/appointments",
+    availabilityRules: "/admin/availability/rules",
+    availabilityDates: "/admin/availability/dates",
+    blockedTimes: "/admin/blocked-times",
+    holidays: "/admin/holidays",
     customers: "/admin/customers",
     waitlist: "/admin/waitlist",
+    calendar: "/admin/integrations/calendar",
   },
 } as const;

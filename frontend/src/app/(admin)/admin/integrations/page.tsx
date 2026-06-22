@@ -1,9 +1,9 @@
-import { EmptyState } from "@/shared/ui/empty-state";
+import { AdminIntegrationsPanel } from "@/features/admin/integrations/components/admin-integrations-panel";
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <EmptyState title="Integrations shell" description="Calendar integration UI is deferred to Phase 3." />
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <AdminIntegrationsPanel />
     </main>
   );
 }

@@ -73,6 +73,71 @@ export interface WaitlistEntry {
   updatedAt: string;
 }
 
+export interface AvailabilityRule {
+  id: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DateAvailability {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  isClosed: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BlockedTime {
+  id: string;
+  startAt: string;
+  endAt: string;
+  reason?: string | null;
+  createdAt: string;
+}
+
+export interface Holiday {
+  id: string;
+  date: string;
+  label?: string | null;
+  createdAt: string;
+}
+
+export interface CustomerSummary {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  appointmentCount: number;
+}
+
+export interface CustomerAppointmentHistoryItem {
+  id: string;
+  serviceId: string;
+  serviceName: string;
+  startAt: string;
+  endAt: string;
+  status: AppointmentStatus;
+  notes?: string | null;
+}
+
+export interface CustomerDetails extends CustomerSummary {
+  appointments: CustomerAppointmentHistoryItem[];
+}
+
+export interface CalendarIntegrationStatus {
+  connected: boolean;
+  calendarId?: string | null;
+}
+
 export interface ApiErrorEnvelope {
   statusCode: number;
   timestamp: string;

@@ -1,9 +1,9 @@
-import { EmptyState } from "@/shared/ui/empty-state";
+import { AdminServicesPanel } from "@/features/admin/services/components/admin-services-panel";
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <EmptyState title="Owner services shell" description="Services management is deferred to Phase 3." />
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <AdminServicesPanel />
     </main>
   );
 }

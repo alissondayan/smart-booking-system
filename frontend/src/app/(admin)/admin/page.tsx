@@ -1,9 +1,9 @@
-import { EmptyState } from "@/shared/ui/empty-state";
+import { AdminDashboard } from "@/features/admin/dashboard/components/admin-dashboard";
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <EmptyState title="Owner dashboard shell" description="Owner dashboard functionality is deferred to Phase 3." />
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <AdminDashboard />
     </main>
   );
 }

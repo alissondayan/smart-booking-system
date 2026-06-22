@@ -1,9 +1,9 @@
-import { EmptyState } from "@/shared/ui/empty-state";
+import { AdminAvailabilityPanel } from "@/features/admin/availability/components/admin-availability-panel";
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <EmptyState title="Owner availability shell" description="Availability management is deferred to Phase 3." />
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <AdminAvailabilityPanel />
     </main>
   );
 }
