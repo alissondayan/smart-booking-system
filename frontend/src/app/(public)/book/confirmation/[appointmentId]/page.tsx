@@ -1,14 +1,14 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { AppointmentDetail } from "@/features/appointments/components/appointment-detail";
+import { BookingConfirmation } from "@/features/booking/components/booking-confirmation";
 
 export default function Page() {
   const params = useParams<{ appointmentId: string }>();
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
-      <AppointmentDetail appointmentId={params.appointmentId} />
+      <BookingConfirmation appointmentId={params.appointmentId} />
     </main>
   );
 }

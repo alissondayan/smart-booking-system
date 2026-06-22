@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { getMe } from "@/features/auth/api/auth.api";
 import type { AuthSession } from "@/features/auth/types";
 import type { AuthResponse, AuthUser } from "@/shared/types/api";
-import { clearSessionTokens, persistAuthResponse } from "@/features/auth/services/session.service";
+import { clearSessionTokens, hasStoredSession, persistAuthResponse } from "@/features/auth/services/session.service";
 
 interface AuthContextValue extends AuthSession {
   setAuthenticatedSession(response: AuthResponse): void;
@@ -15,7 +16,43 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<AuthUser | null>(null);
-  const [status, setStatus] = useState<AuthSession["status"]>("unauthenticated");
+  const [status, setStatus] = useState<AuthSession["status"]>("loading");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function restoreSession() {
+      if (!hasStoredSession()) {
+        if (isMounted) {
+          setStatus("unauthenticated");
+        }
+
+        return;
+      }
+
+      try {
+        const currentUser = await getMe();
+
+        if (isMounted) {
+          setUserState(currentUser);
+          setStatus("authenticated");
+        }
+      } catch {
+        clearSessionTokens();
+
+        if (isMounted) {
+          setUserState(null);
+          setStatus("unauthenticated");
+        }
+      }
+    }
+
+    void restoreSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const setAuthenticatedSession = useCallback((response: AuthResponse) => {
     persistAuthResponse(response);

@@ -1,9 +1,14 @@
-import { EmptyState } from "@/shared/ui/empty-state";
+"use client";
+
+import { useParams } from "next/navigation";
+import { ServiceDetail } from "@/features/catalog/components/service-detail";
 
 export default function Page() {
+  const params = useParams<{ serviceId: string }>();
+
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
-      <EmptyState title="Service detail route shell" description="Service detail functionality is deferred beyond the foundation phase." />
+      <ServiceDetail serviceId={params.serviceId} />
     </main>
   );
 }

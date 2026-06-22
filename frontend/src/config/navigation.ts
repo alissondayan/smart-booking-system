@@ -7,6 +7,7 @@ export const publicNavigation: NavigationItem[] = [
 ];
 
 export const customerNavigation: NavigationItem[] = [
+  { label: "Dashboard", href: routes.account },
   { label: "My appointments", href: routes.accountAppointments },
   { label: "Waitlist", href: routes.accountWaitlist },
   { label: "Profile", href: routes.accountProfile },
