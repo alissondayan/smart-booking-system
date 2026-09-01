@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User as PrismaUser, UserRole as PrismaUserRole } from '@prisma/client';
+import { User as PrismaUser, UserRole as PrismaUserRole } from '@prisma/client';
 import { UserRole } from '../../../../shared/domain/enums/user-role.enum';
 import { PrismaService } from '../../../../shared/infrastructure/database/prisma.service';
 import { UserEntity } from '../../domain/entities/user.entity';
