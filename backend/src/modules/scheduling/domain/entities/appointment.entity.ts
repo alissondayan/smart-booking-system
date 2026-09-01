@@ -1,5 +1,13 @@
 import { AppointmentStatus } from '../../../../shared/domain/enums/appointment-status.enum';
 
+export interface AppointmentCustomerSummary {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string | null;
+}
+
 export interface AppointmentProps {
   id: string;
   serviceId: string;
@@ -12,6 +20,8 @@ export interface AppointmentProps {
   googleEventId?: string | null;
   createdAt: Date;
   updatedAt: Date;
+  /** Only populated by the owner-facing repository reads. */
+  customer?: AppointmentCustomerSummary | null;
 }
 
 export class AppointmentEntity {

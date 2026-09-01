@@ -259,6 +259,16 @@ class SchedulingAppointmentRepository implements AppointmentRepositoryPort {
     return Promise.resolve(this.appointments.get(id) ?? null);
   }
 
+  findByIdWithCustomer(id: string): Promise<AppointmentEntity | null> {
+    return this.findById(id);
+  }
+
+  listWithCustomer(
+    filters: AppointmentListFilters,
+  ): Promise<AppointmentEntity[]> {
+    return this.list(filters);
+  }
+
   list(filters: AppointmentListFilters): Promise<AppointmentEntity[]> {
     return Promise.resolve(
       [...this.appointments.values()]

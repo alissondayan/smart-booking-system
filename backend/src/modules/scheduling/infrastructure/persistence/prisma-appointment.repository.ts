@@ -3,6 +3,7 @@ import {
   Appointment,
   AppointmentStatus as PrismaAppointmentStatus,
   Prisma,
+  User,
 } from '@prisma/client';
 import { AppointmentStatus } from '../../../../shared/domain/enums/appointment-status.enum';
 import { PrismaService } from '../../../../shared/infrastructure/database/prisma.service';
@@ -25,6 +26,15 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryPort {
     return appointment ? this.toDomain(appointment) : null;
   }
 
+  async findByIdWithCustomer(id: string): Promise<AppointmentEntity | null> {
+    const appointment = await this.prismaService.appointment.findUnique({
+      where: { id },
+      include: { customer: true },
+    });
+
+    return appointment ? this.toDomainWithCustomer(appointment) : null;
+  }
+
   async list(filters: AppointmentListFilters): Promise<AppointmentEntity[]> {
     const appointments = await this.prismaService.appointment.findMany({
       where: this.toWhere(filters),
@@ -32,6 +42,20 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryPort {
     });
 
     return appointments.map((appointment) => this.toDomain(appointment));
+  }
+
+  async listWithCustomer(
+    filters: AppointmentListFilters,
+  ): Promise<AppointmentEntity[]> {
+    const appointments = await this.prismaService.appointment.findMany({
+      where: this.toWhere(filters),
+      orderBy: { startAt: 'asc' },
+      include: { customer: true },
+    });
+
+    return appointments.map((appointment) =>
+      this.toDomainWithCustomer(appointment),
+    );
   }
 
   async listConfirmedOverlapping(
@@ -204,6 +228,21 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryPort {
       googleEventId: appointment.googleEventId,
       createdAt: appointment.createdAt,
       updatedAt: appointment.updatedAt,
+    });
+  }
+
+  private toDomainWithCustomer(
+    appointment: Appointment & { customer: User },
+  ): AppointmentEntity {
+    return new AppointmentEntity({
+      ...this.toDomain(appointment).toJSON(),
+      customer: {
+        id: appointment.customer.id,
+        firstName: appointment.customer.firstName,
+        lastName: appointment.customer.lastName,
+        email: appointment.customer.email,
+        phone: appointment.customer.phone,
+      },
     });
   }
 }

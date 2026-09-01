@@ -63,9 +63,15 @@ export function AdminAppointmentsPanel() {
                   {new Date(a.startAt).toLocaleString()} -{" "}
                   {new Date(a.endAt).toLocaleString()}
                 </p>
-                <p className="text-sm text-[var(--color-muted-foreground)]">
-                  Customer: {a.customerId}
-                </p>
+                <div className="text-sm text-[var(--color-muted-foreground)]">
+                  <p className="font-medium text-[var(--color-foreground)]">
+                    {a.customer
+                      ? `${a.customer.firstName} ${a.customer.lastName}`
+                      : "Unknown customer"}
+                  </p>
+                  {a.customer ? <p>{a.customer.email}</p> : null}
+                  {a.customer?.phone ? <p>{a.customer.phone}</p> : null}
+                </div>
                 <div className="flex gap-2">
                   <Link
                     className="rounded-[var(--radius-base)] border border-[var(--color-border)] px-4 py-2 text-sm"

@@ -22,7 +22,7 @@ export class ListAdminAppointmentsUseCase {
 
   async list(query: ListAdminAppointmentsQuery): Promise<AppointmentResponse[]> {
     const range = query.date ? this.fullDay(query.date) : undefined;
-    const appointments = await this.appointmentRepository.list({
+    const appointments = await this.appointmentRepository.listWithCustomer({
       status: query.status,
       from: query.from ?? range?.from,
       to: query.to ?? range?.to,
@@ -32,7 +32,8 @@ export class ListAdminAppointmentsUseCase {
   }
 
   async get(appointmentId: string): Promise<AppointmentResponse> {
-    const appointment = await this.appointmentRepository.findById(appointmentId);
+    const appointment =
+      await this.appointmentRepository.findByIdWithCustomer(appointmentId);
 
     if (!appointment) {
       throw new NotFoundException('Appointment not found');

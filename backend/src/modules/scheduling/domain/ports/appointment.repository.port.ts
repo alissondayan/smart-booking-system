@@ -19,7 +19,9 @@ export interface AppointmentListFilters {
 
 export interface AppointmentRepositoryPort {
   findById(id: string): Promise<AppointmentEntity | null>;
+  findByIdWithCustomer(id: string): Promise<AppointmentEntity | null>;
   list(filters: AppointmentListFilters): Promise<AppointmentEntity[]>;
+  listWithCustomer(filters: AppointmentListFilters): Promise<AppointmentEntity[]>;
   listConfirmedOverlapping(startAt: Date, endAt: Date): Promise<AppointmentEntity[]>;
   createIfSlotAvailable(data: CreateAppointmentData): Promise<AppointmentEntity | null>;
   cancel(id: string): Promise<AppointmentEntity | null>;

@@ -49,6 +49,14 @@ export interface AvailabilitySlot {
   endAt: string;
 }
 
+export interface AppointmentCustomer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string | null;
+}
+
 export interface Appointment {
   id: string;
   serviceId: string;
@@ -61,6 +69,8 @@ export interface Appointment {
   googleEventId?: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Only returned by the owner/admin appointment endpoints. */
+  customer?: AppointmentCustomer | null;
 }
 
 export interface WaitlistEntry {

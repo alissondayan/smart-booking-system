@@ -47,7 +47,22 @@ export function AdminAppointmentDetail({
       <CardContent className="grid gap-4">
         <p>Starts: {new Date(appointment.data.startAt).toLocaleString()}</p>
         <p>Ends: {new Date(appointment.data.endAt).toLocaleString()}</p>
-        <p>Customer: {appointment.data.customerId}</p>
+        <div>
+          <p className="text-sm text-[var(--color-muted-foreground)]">
+            Customer
+          </p>
+          <p className="font-medium">
+            {appointment.data.customer
+              ? `${appointment.data.customer.firstName} ${appointment.data.customer.lastName}`
+              : "Unknown customer"}
+          </p>
+          {appointment.data.customer ? (
+            <p className="text-sm">{appointment.data.customer.email}</p>
+          ) : null}
+          {appointment.data.customer?.phone ? (
+            <p className="text-sm">{appointment.data.customer.phone}</p>
+          ) : null}
+        </div>
         <label className="grid gap-2 text-sm font-medium">
           Owner notes
           <Input
