@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/shared/api/query-keys";
 import {
   getAdminCustomer,
@@ -9,6 +9,7 @@ export function useAdminCustomers(filters: CustomerFilters = {}) {
   return useQuery({
     queryKey: queryKeys.customers.admin(filters),
     queryFn: () => listAdminCustomers(filters),
+    placeholderData: keepPreviousData,
   });
 }
 export function useAdminCustomer(id: string) {
