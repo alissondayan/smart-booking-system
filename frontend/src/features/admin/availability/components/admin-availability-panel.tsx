@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { AvailabilityRule } from "@/shared/types/api";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-state";
@@ -30,26 +31,99 @@ const dayNames = [
   "Saturday",
 ];
 
+/** A day with no stored rule is closed, so it starts inactive rather than pre-filled as open. */
+function toRuleRows(rules: AvailabilityRule[]) {
+  return dayNames.map((_, dayOfWeek) => {
+    const rule = rules.find((candidate) => candidate.dayOfWeek === dayOfWeek);
+
+    return {
+      dayOfWeek,
+      startTime: rule?.startTime ?? "09:00",
+      endTime: rule?.endTime ?? "17:00",
+      isActive: rule?.isActive ?? false,
+    };
+  });
+}
+
+function WeeklyRulesCard({ rules }: { rules: AvailabilityRule[] }) {
+  const replaceRules = useReplaceAvailabilityRules();
+  const [ruleRows, setRuleRows] = useState(() => toRuleRows(rules));
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Weekly rules</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-3">
+        {ruleRows.map((row, index) => (
+          <div
+            className="grid gap-2 rounded-[var(--radius-base)] border border-[var(--color-border)] p-3 md:grid-cols-[1fr_120px_120px_100px]"
+            key={row.dayOfWeek}
+          >
+            <span className="font-medium">{dayNames[row.dayOfWeek]}</span>
+            <Input
+              value={row.startTime}
+              type="time"
+              onChange={(e) =>
+                setRuleRows((v) =>
+                  v.map((r, i) =>
+                    i === index ? { ...r, startTime: e.target.value } : r,
+                  ),
+                )
+              }
+            />
+            <Input
+              value={row.endTime}
+              type="time"
+              onChange={(e) =>
+                setRuleRows((v) =>
+                  v.map((r, i) =>
+                    i === index ? { ...r, endTime: e.target.value } : r,
+                  ),
+                )
+              }
+            />
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                checked={row.isActive}
+                type="checkbox"
+                onChange={(e) =>
+                  setRuleRows((v) =>
+                    v.map((r, i) =>
+                      i === index ? { ...r, isActive: e.target.checked } : r,
+                    ),
+                  )
+                }
+              />
+              Active
+            </label>
+          </div>
+        ))}
+        <Button
+          disabled={replaceRules.isPending}
+          onClick={() => replaceRules.mutate(ruleRows)}
+        >
+          Save weekly rules
+        </Button>
+        {replaceRules.error ? (
+          <p className="text-sm text-red-700">{replaceRules.error.message}</p>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function AdminAvailabilityPanel() {
   const rules = useAvailabilityRules();
   const dates = useDateOverrides();
   const blocked = useBlockedTimes();
   const holidays = useHolidays();
-  const replaceRules = useReplaceAvailabilityRules();
   const setDate = useSetDateOverride();
   const deleteDate = useDeleteDateOverride();
   const createBlocked = useCreateBlockedTime();
   const deleteBlocked = useDeleteBlockedTime();
   const createHoliday = useCreateHoliday();
   const deleteHoliday = useDeleteHoliday();
-  const [ruleRows, setRuleRows] = useState(
-    dayNames.map((_, dayOfWeek) => ({
-      dayOfWeek,
-      startTime: "09:00",
-      endTime: "17:00",
-      isActive: dayOfWeek > 0 && dayOfWeek < 6,
-    })),
-  );
   const [dateForm, setDateForm] = useState({
     date: "",
     startTime: "09:00",
@@ -84,66 +158,7 @@ export function AdminAvailabilityPanel() {
 
   return (
     <div className="grid gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Weekly rules</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3">
-          {ruleRows.map((row, index) => (
-            <div
-              className="grid gap-2 rounded-[var(--radius-base)] border border-[var(--color-border)] p-3 md:grid-cols-[1fr_120px_120px_100px]"
-              key={row.dayOfWeek}
-            >
-              <span className="font-medium">{dayNames[row.dayOfWeek]}</span>
-              <Input
-                value={row.startTime}
-                type="time"
-                onChange={(e) =>
-                  setRuleRows((v) =>
-                    v.map((r, i) =>
-                      i === index ? { ...r, startTime: e.target.value } : r,
-                    ),
-                  )
-                }
-              />
-              <Input
-                value={row.endTime}
-                type="time"
-                onChange={(e) =>
-                  setRuleRows((v) =>
-                    v.map((r, i) =>
-                      i === index ? { ...r, endTime: e.target.value } : r,
-                    ),
-                  )
-                }
-              />
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  checked={row.isActive}
-                  type="checkbox"
-                  onChange={(e) =>
-                    setRuleRows((v) =>
-                      v.map((r, i) =>
-                        i === index ? { ...r, isActive: e.target.checked } : r,
-                      ),
-                    )
-                  }
-                />
-                Active
-              </label>
-            </div>
-          ))}
-          <Button
-            disabled={replaceRules.isPending}
-            onClick={() => replaceRules.mutate(ruleRows)}
-          >
-            Save weekly rules
-          </Button>
-          {replaceRules.error ? (
-            <p className="text-sm text-red-700">{replaceRules.error.message}</p>
-          ) : null}
-        </CardContent>
-      </Card>
+      <WeeklyRulesCard rules={rules.data} />
       <div className="grid gap-6 lg:grid-cols-3">
         <Card>
           <CardHeader>
