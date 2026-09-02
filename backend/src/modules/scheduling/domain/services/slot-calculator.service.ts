@@ -10,6 +10,7 @@ export interface CalculateSlotsInput {
   serviceId: string;
   date: string;
   timezone: string;
+  now: Date;
   durationMinutes: number;
   rule: AvailabilityRuleEntity | null;
   dateAvailability: DateAvailabilityEntity | null;
@@ -39,6 +40,7 @@ export class SlotCalculatorService {
       input.durationMinutes,
     ).filter(
       (slot) =>
+        this.isBookable(slot, input.now) &&
         !this.overlapsAny(slot, input.blockedTimes) &&
         !this.overlapsAny(slot, input.appointments),
     );
@@ -96,6 +98,15 @@ export class SlotCalculatorService {
     }
 
     return slots;
+  }
+
+  /**
+   * Slot boundaries are absolute instants, so this needs no timezone conversion.
+   * Strict `>` mirrors BookingService.assertFutureSlot, keeping the advertised
+   * slots aligned with what booking and rescheduling will accept.
+   */
+  private isBookable(slot: TimeSlot, now: Date): boolean {
+    return slot.startAt > now;
   }
 
   private overlapsAny(

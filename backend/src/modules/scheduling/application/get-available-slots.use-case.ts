@@ -59,6 +59,7 @@ export class GetAvailableSlotsUseCase {
       serviceId: query.serviceId,
       date: query.date,
       timezone,
+      now: new Date(),
       durationMinutes: serviceData.durationMinutes,
       rule: await this.availabilityRepository.findRuleByDayOfWeek(dayOfWeek),
       dateAvailability: await this.availabilityRepository.findDateAvailability(date),
