@@ -55,6 +55,7 @@ export function useRescheduleMyAppointment() {
       rescheduleMyAppointment(appointmentId, newStartAt),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.appointments.mine() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.availability.all() });
     },
   });
 }

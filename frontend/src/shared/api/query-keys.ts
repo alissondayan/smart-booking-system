@@ -10,6 +10,7 @@ export const queryKeys = {
     detail: (id: string) => ["services", id] as const,
   },
   availability: {
+    all: () => ["availability"] as const,
     slots: (serviceId: string, date: string) =>
       ["availability", serviceId, date] as const,
   },

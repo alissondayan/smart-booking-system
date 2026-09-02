@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EVENT_BUS, EventBusPort } from '../../../shared/application/event-bus.port';
+import { AppointmentStatus } from '../../../shared/domain/enums/appointment-status.enum';
 import {
   SERVICE_REPOSITORY,
   ServiceRepositoryPort,
@@ -51,6 +52,16 @@ export class RescheduleAppointmentUseCase {
 
     if (command.customerId && existing.customerId !== command.customerId) {
       throw new ForbiddenException('Appointment does not belong to the current user');
+    }
+
+    if (existing.status !== AppointmentStatus.CONFIRMED) {
+      throw new ConflictException('Only confirmed appointments can be rescheduled');
+    }
+
+    if (existing.startAt <= new Date()) {
+      throw new ConflictException(
+        'Appointments that have already started cannot be rescheduled',
+      );
     }
 
     const service = await this.serviceRepository.findActiveById(existing.serviceId);
