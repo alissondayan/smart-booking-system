@@ -36,8 +36,28 @@ class InMemoryCustomerRepository implements CustomerRepositoryPort {
         phone: '+972501111111',
         createdAt: new Date('2026-01-01T00:00:00.000Z'),
         updatedAt: new Date('2026-01-02T00:00:00.000Z'),
-        appointmentCount: 1,
+        appointmentCount: 3,
+        lastAppointmentAt: new Date('2026-06-20T09:00:00.000Z'),
+        nextAppointmentAt: new Date('2027-02-10T09:00:00.000Z'),
         appointments: [
+          {
+            id: randomUUID(),
+            serviceId: randomUUID(),
+            serviceName: 'Beard Trim',
+            startAt: new Date('2027-02-10T09:00:00.000Z'),
+            endAt: new Date('2027-02-10T09:30:00.000Z'),
+            status: AppointmentStatus.CONFIRMED,
+            notes: null,
+          },
+          {
+            id: randomUUID(),
+            serviceId: randomUUID(),
+            serviceName: 'Colouring',
+            startAt: new Date('2027-01-05T09:00:00.000Z'),
+            endAt: new Date('2027-01-05T09:30:00.000Z'),
+            status: AppointmentStatus.CANCELLED,
+            notes: null,
+          },
           {
             id: randomUUID(),
             serviceId: randomUUID(),
@@ -58,6 +78,8 @@ class InMemoryCustomerRepository implements CustomerRepositoryPort {
         createdAt: new Date('2026-01-03T00:00:00.000Z'),
         updatedAt: new Date('2026-01-04T00:00:00.000Z'),
         appointmentCount: 0,
+        lastAppointmentAt: null,
+        nextAppointmentAt: null,
         appointments: [],
       },
     ];
@@ -161,9 +183,29 @@ describe('Customers (e2e)', () => {
         expect(response.body.items).toHaveLength(1);
         expect(response.body.items[0]).toMatchObject({
           email: 'dana@example.com',
-          appointmentCount: 1,
+          phone: '+972501111111',
+          appointmentCount: 3,
+          lastAppointmentAt: '2026-06-20T09:00:00.000Z',
+          nextAppointmentAt: '2027-02-10T09:00:00.000Z',
         });
         expect(response.body.items[0].appointments).toBeUndefined();
+      });
+  });
+
+  it('returns null appointment milestones for customers without appointments', async () => {
+    await request(app.getHttpServer())
+      .get('/api/v1/admin/customers')
+      .set('Authorization', `Bearer ${ownerAccessToken}`)
+      .query({ search: 'ron' })
+      .expect(200)
+      .expect((response) => {
+        expect(response.body.items).toHaveLength(1);
+        expect(response.body.items[0]).toMatchObject({
+          email: 'ron@example.com',
+          appointmentCount: 0,
+          lastAppointmentAt: null,
+          nextAppointmentAt: null,
+        });
       });
   });
 
@@ -180,8 +222,12 @@ describe('Customers (e2e)', () => {
       .expect(200)
       .expect((response) => {
         expect(response.body.email).toBe('dana@example.com');
-        expect(response.body.appointments).toHaveLength(1);
-        expect(response.body.appointments[0]).toMatchObject({
+        expect(response.body).toMatchObject({
+          lastAppointmentAt: '2026-06-20T09:00:00.000Z',
+          nextAppointmentAt: '2027-02-10T09:00:00.000Z',
+        });
+        expect(response.body.appointments).toHaveLength(3);
+        expect(response.body.appointments[2]).toMatchObject({
           serviceName: 'Haircut',
           status: AppointmentStatus.CONFIRMED,
         });

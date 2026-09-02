@@ -127,6 +127,8 @@ export interface CustomerSummary {
   createdAt: string;
   updatedAt: string;
   appointmentCount: number;
+  lastAppointmentAt?: string | null;
+  nextAppointmentAt?: string | null;
 }
 
 export interface CustomerAppointmentHistoryItem {

@@ -25,6 +25,20 @@ export class CustomerSummaryResponseDto {
 
   @ApiProperty()
   appointmentCount: number;
+
+  @ApiPropertyOptional({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+  })
+  lastAppointmentAt: Date | null;
+
+  @ApiPropertyOptional({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+  })
+  nextAppointmentAt: Date | null;
 }
 
 export class CustomerAppointmentHistoryItemDto {

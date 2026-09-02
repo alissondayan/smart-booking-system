@@ -54,8 +54,21 @@ export function AdminCustomersPanel() {
                   </CardHeader>
                   <CardContent>
                     <p>{c.email}</p>
+                    {c.phone ? <p>{c.phone}</p> : null}
                     <p className="text-sm text-[var(--color-muted-foreground)]">
                       Appointments: {c.appointmentCount}
+                    </p>
+                    <p className="text-sm text-[var(--color-muted-foreground)]">
+                      Last appointment:{" "}
+                      {c.lastAppointmentAt
+                        ? new Date(c.lastAppointmentAt).toLocaleString()
+                        : "None"}
+                    </p>
+                    <p className="text-sm text-[var(--color-muted-foreground)]">
+                      Next appointment:{" "}
+                      {c.nextAppointmentAt
+                        ? new Date(c.nextAppointmentAt).toLocaleString()
+                        : "None"}
                     </p>
                     <Link
                       className="text-sm text-[var(--color-primary)]"

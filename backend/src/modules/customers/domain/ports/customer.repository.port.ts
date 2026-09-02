@@ -11,6 +11,8 @@ export interface CustomerSummary {
   createdAt: Date;
   updatedAt: Date;
   appointmentCount: number;
+  lastAppointmentAt: Date | null;
+  nextAppointmentAt: Date | null;
 }
 
 export interface CustomerAppointmentHistoryItem {
