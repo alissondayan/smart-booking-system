@@ -21,7 +21,7 @@ export function AdminAppointmentDetail({
   const appointment = useAdminAppointment(appointmentId);
   const services = useAdminServices();
   const updateNotes = useUpdateAdminAppointmentNotes();
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState<string | null>(null);
   if (appointment.isPending || services.isPending)
     return (
       <EmptyState
@@ -36,6 +36,7 @@ export function AdminAppointmentDetail({
   const service = services.data.find(
     (s) => s.id === appointment.data.serviceId,
   );
+  const notesValue = notes ?? appointment.data.notes ?? "";
   return (
     <Card>
       <CardHeader>
@@ -66,13 +67,18 @@ export function AdminAppointmentDetail({
         <label className="grid gap-2 text-sm font-medium">
           Owner notes
           <Input
-            value={notes || appointment.data.notes || ""}
+            value={notesValue}
             onChange={(e) => setNotes(e.target.value)}
           />
         </label>
         <Button
           disabled={updateNotes.isPending}
-          onClick={() => updateNotes.mutate({ id: appointment.data.id, notes })}
+          onClick={() =>
+            updateNotes.mutate({
+              id: appointment.data.id,
+              notes: notesValue,
+            })
+          }
         >
           Save notes
         </Button>
