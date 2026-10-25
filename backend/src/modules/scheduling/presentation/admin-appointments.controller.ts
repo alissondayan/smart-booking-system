@@ -5,6 +5,7 @@ import { Roles } from '../../../shared/presentation/decorators/roles.decorator';
 import { RolesGuard } from '../../../shared/presentation/guards/roles.guard';
 import { JwtAuthGuard } from '../../identity/infrastructure/auth/jwt-auth.guard';
 import { CancelAppointmentUseCase } from '../application/cancel-appointment.use-case';
+import { CompleteAppointmentUseCase } from '../application/complete-appointment.use-case';
 import { ListAdminAppointmentsUseCase } from '../application/list-admin-appointments.use-case';
 import { AppointmentResponse } from '../application/scheduling-response';
 import { AppointmentQueryDto } from './dto/appointment-query.dto';
@@ -21,6 +22,7 @@ export class AdminAppointmentsController {
   constructor(
     private readonly listAdminAppointmentsUseCase: ListAdminAppointmentsUseCase,
     private readonly cancelAppointmentUseCase: CancelAppointmentUseCase,
+    private readonly completeAppointmentUseCase: CompleteAppointmentUseCase,
   ) {}
 
   @Get()
@@ -44,6 +46,12 @@ export class AdminAppointmentsController {
   @ApiOkResponse({ description: 'Cancelled appointment.' })
   cancel(@Param('id') id: string): Promise<AppointmentResponse> {
     return this.cancelAppointmentUseCase.execute({ appointmentId: id });
+  }
+
+  @Patch(':id/complete')
+  @ApiOkResponse({ description: 'Completed appointment.' })
+  complete(@Param('id') id: string): Promise<AppointmentResponse> {
+    return this.completeAppointmentUseCase.execute({ appointmentId: id });
   }
 
   @Patch(':id/notes')

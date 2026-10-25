@@ -1,5 +1,6 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EVENT_BUS, EventBusPort } from '../../../shared/application/event-bus.port';
+import { AppointmentStatus } from '../../../shared/domain/enums/appointment-status.enum';
 import { AppointmentCancelledEvent } from '../domain/events/appointment-cancelled.event';
 import {
   APPOINTMENT_REPOSITORY,
@@ -30,6 +31,10 @@ export class CancelAppointmentUseCase {
 
     if (command.customerId && existing.customerId !== command.customerId) {
       throw new ForbiddenException('Appointment does not belong to the current user');
+    }
+
+    if (existing.status !== AppointmentStatus.CONFIRMED) {
+      throw new ConflictException('Only confirmed appointments can be cancelled');
     }
 
     const appointment = await this.appointmentRepository.cancel(command.appointmentId);

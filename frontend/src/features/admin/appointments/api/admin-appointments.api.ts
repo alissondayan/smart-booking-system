@@ -36,6 +36,12 @@ export function cancelAdminAppointment(id: string) {
     { method: "PATCH", auth: true },
   );
 }
+export function completeAdminAppointment(id: string) {
+  return apiRequest<Appointment>(
+    `${endpoints.admin.appointments}/${id}/complete`,
+    { method: "PATCH", auth: true },
+  );
+}
 export function updateAdminAppointmentNotes(id: string, notes?: string) {
   return apiRequest<Appointment>(
     `${endpoints.admin.appointments}/${id}/notes`,

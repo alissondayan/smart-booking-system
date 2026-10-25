@@ -117,6 +117,24 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryPort {
     return this.toDomain(appointment);
   }
 
+  async complete(id: string): Promise<AppointmentEntity | null> {
+    const existing = await this.findById(id);
+
+    if (!existing) {
+      return null;
+    }
+
+    const appointment = await this.prismaService.appointment.update({
+      where: { id },
+      data: {
+        status: PrismaAppointmentStatus.COMPLETED,
+        version: { increment: 1 },
+      },
+    });
+
+    return this.toDomain(appointment);
+  }
+
   async rescheduleIfSlotAvailable(
     id: string,
     startAt: Date,

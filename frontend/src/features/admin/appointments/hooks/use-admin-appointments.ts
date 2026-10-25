@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/shared/api/query-keys";
 import {
   cancelAdminAppointment,
+  completeAdminAppointment,
   getAdminAppointment,
   listAdminAppointments,
   updateAdminAppointmentNotes,
@@ -27,6 +28,18 @@ export function useCancelAdminAppointment() {
     mutationFn: cancelAdminAppointment,
     onSuccess: () =>
       void qc.invalidateQueries({ queryKey: ["appointments", "admin"] }),
+  });
+}
+export function useCompleteAdminAppointment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: completeAdminAppointment,
+    onSuccess: (_, id) => {
+      void qc.invalidateQueries({ queryKey: ["appointments", "admin"] });
+      void qc.invalidateQueries({
+        queryKey: queryKeys.appointments.adminDetail(id),
+      });
+    },
   });
 }
 export function useUpdateAdminAppointmentNotes() {

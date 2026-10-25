@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   useAdminAppointments,
   useCancelAdminAppointment,
+  useCompleteAdminAppointment,
 } from "../hooks/use-admin-appointments";
 import { useAdminServices } from "@/features/admin/services/hooks/use-admin-services";
 import { Button } from "@/shared/ui/button";
@@ -19,6 +20,7 @@ export function AdminAppointmentsPanel() {
   const appointments = useAdminAppointments(date ? { date } : {});
   const services = useAdminServices();
   const cancel = useCancelAdminAppointment();
+  const complete = useCompleteAdminAppointment();
   if (appointments.isPending || services.isPending)
     return (
       <EmptyState
@@ -85,6 +87,15 @@ export function AdminAppointmentsPanel() {
                       onClick={() => cancel.mutate(a.id)}
                     >
                       Cancel
+                    </Button>
+                  ) : null}
+                  {a.status === "CONFIRMED" &&
+                  new Date(a.endAt) <= new Date() ? (
+                    <Button
+                      disabled={complete.isPending}
+                      onClick={() => complete.mutate(a.id)}
+                    >
+                      Mark completed
                     </Button>
                   ) : null}
                 </div>

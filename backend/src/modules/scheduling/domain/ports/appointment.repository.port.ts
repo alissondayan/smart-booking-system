@@ -25,6 +25,7 @@ export interface AppointmentRepositoryPort {
   listConfirmedOverlapping(startAt: Date, endAt: Date): Promise<AppointmentEntity[]>;
   createIfSlotAvailable(data: CreateAppointmentData): Promise<AppointmentEntity | null>;
   cancel(id: string): Promise<AppointmentEntity | null>;
+  complete(id: string): Promise<AppointmentEntity | null>;
   rescheduleIfSlotAvailable(
     id: string,
     startAt: Date,

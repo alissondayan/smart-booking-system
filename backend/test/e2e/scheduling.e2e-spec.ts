@@ -337,6 +337,24 @@ class SchedulingAppointmentRepository implements AppointmentRepositoryPort {
     return cancelled;
   }
 
+  async complete(id: string): Promise<AppointmentEntity | null> {
+    const appointment = this.appointments.get(id);
+
+    if (!appointment) {
+      return null;
+    }
+
+    const completed = new AppointmentEntity({
+      ...appointment.toJSON(),
+      status: AppointmentStatus.COMPLETED,
+      version: appointment.toJSON().version + 1,
+      updatedAt: new Date(),
+    });
+    this.appointments.set(id, completed);
+
+    return completed;
+  }
+
   async rescheduleIfSlotAvailable(
     id: string,
     startAt: Date,

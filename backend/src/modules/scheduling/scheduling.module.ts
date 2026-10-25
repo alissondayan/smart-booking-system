@@ -3,6 +3,7 @@ import { BusinessModule } from '../business/business.module';
 import { CatalogModule } from '../catalog/catalog.module';
 import { BookAppointmentUseCase } from './application/book-appointment.use-case';
 import { CancelAppointmentUseCase } from './application/cancel-appointment.use-case';
+import { CompleteAppointmentUseCase } from './application/complete-appointment.use-case';
 import { CreateBlockedTimeUseCase } from './application/create-blocked-time.use-case';
 import { CreateHolidayUseCase } from './application/create-holiday.use-case';
 import { GetAvailableSlotsUseCase } from './application/get-available-slots.use-case';
@@ -38,6 +39,7 @@ import { MyAppointmentsController } from './presentation/my-appointments.control
     GetAvailableSlotsUseCase,
     BookAppointmentUseCase,
     CancelAppointmentUseCase,
+    CompleteAppointmentUseCase,
     RescheduleAppointmentUseCase,
     ListMyAppointmentsUseCase,
     ListAdminAppointmentsUseCase,
