@@ -90,20 +90,37 @@ export class PrismaWaitlistRepository implements WaitlistRepositoryPort {
   }
 
   async markNotified(id: string): Promise<WaitlistEntryEntity | null> {
-    const existingEntry = await this.prismaService.waitlistEntry.findUnique({
-      where: { id },
-    });
-
-    if (!existingEntry) {
-      return null;
-    }
-
-    const entry = await this.prismaService.waitlistEntry.update({
-      where: { id },
+    const claimed = await this.prismaService.waitlistEntry.updateMany({
+      where: { id, status: PrismaWaitlistStatus.ACTIVE },
       data: { status: PrismaWaitlistStatus.NOTIFIED },
     });
 
-    return this.toDomain(entry);
+    if (claimed.count === 0) {
+      return null;
+    }
+
+    return this.findDomainById(id);
+  }
+
+  async revertToActiveIfNotified(id: string): Promise<WaitlistEntryEntity | null> {
+    const reverted = await this.prismaService.waitlistEntry.updateMany({
+      where: { id, status: PrismaWaitlistStatus.NOTIFIED },
+      data: { status: PrismaWaitlistStatus.ACTIVE },
+    });
+
+    if (reverted.count === 0) {
+      return null;
+    }
+
+    return this.findDomainById(id);
+  }
+
+  private async findDomainById(id: string): Promise<WaitlistEntryEntity | null> {
+    const entry = await this.prismaService.waitlistEntry.findUnique({
+      where: { id },
+    });
+
+    return entry ? this.toDomain(entry) : null;
   }
 
   private toWhere(filters: ListWaitlistFilters): Prisma.WaitlistEntryWhereInput {

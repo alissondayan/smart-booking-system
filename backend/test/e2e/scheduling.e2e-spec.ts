@@ -476,6 +476,10 @@ class NoopWaitlistRepository implements WaitlistRepositoryPort {
   markNotified(_id: string): Promise<WaitlistEntryEntity | null> {
     return Promise.resolve(null);
   }
+
+  revertToActiveIfNotified(_id: string): Promise<WaitlistEntryEntity | null> {
+    return Promise.resolve(null);
+  }
 }
 
 class SchedulingUserRepository implements Pick<UserRepositoryPort, 'findById'> {

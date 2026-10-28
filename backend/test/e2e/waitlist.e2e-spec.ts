@@ -1,3 +1,4 @@
+import { getQueueToken } from '@nestjs/bullmq';
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
@@ -5,6 +6,7 @@ import { randomUUID } from 'crypto';
 import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { EVENT_BUS, EventBusPort } from '../../src/shared/application/event-bus.port';
+import { EMAIL_NOTIFICATIONS_QUEUE } from '../../src/shared/infrastructure/queue/queue.constants';
 import { UserRole } from '../../src/shared/domain/enums/user-role.enum';
 import { WaitlistStatus } from '../../src/shared/domain/enums/waitlist-status.enum';
 import { RedisService } from '../../src/shared/infrastructure/cache/redis.service';
@@ -162,7 +164,7 @@ class InMemoryWaitlistRepository implements WaitlistRepositoryPort {
   markNotified(id: string): Promise<WaitlistEntryEntity | null> {
     const entry = this.entries.get(id);
 
-    if (!entry) {
+    if (!entry || entry.status !== WaitlistStatus.ACTIVE) {
       return Promise.resolve(null);
     }
 
@@ -175,16 +177,39 @@ class InMemoryWaitlistRepository implements WaitlistRepositoryPort {
 
     return Promise.resolve(notified);
   }
+
+  revertToActiveIfNotified(id: string): Promise<WaitlistEntryEntity | null> {
+    const entry = this.entries.get(id);
+
+    if (!entry || entry.status !== WaitlistStatus.NOTIFIED) {
+      return Promise.resolve(null);
+    }
+
+    const active = new WaitlistEntryEntity({
+      ...entry.toJSON(),
+      status: WaitlistStatus.ACTIVE,
+      updatedAt: new Date(),
+    });
+    this.entries.set(id, active);
+
+    return Promise.resolve(active);
+  }
 }
 
 class WaitlistUserRepository implements Pick<UserRepositoryPort, 'findById'> {
+  constructor(private readonly waitlistCustomerId: string) {}
+
   findById(id: string): Promise<UserEntity | null> {
+    const isWaitlistCustomer = id === this.waitlistCustomerId;
+
     return Promise.resolve(
       new UserEntity({
         id,
-        email: 'customer@example.com',
+        email: isWaitlistCustomer
+          ? 'waitlist-customer@example.com'
+          : 'cancelling-customer@example.com',
         role: UserRole.CUSTOMER,
-        firstName: 'Dana',
+        firstName: isWaitlistCustomer ? 'Waitlist' : 'Cancelling',
         lastName: 'Cohen',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -197,6 +222,7 @@ describe('Waitlist (e2e)', () => {
   let app: INestApplication;
   let jwtService: JwtService;
   let eventBus: EventBusPort;
+  let emailQueueAdd: jest.Mock;
   let ownerAccessToken: string;
   let customerAccessToken: string;
   let serviceId: string;
@@ -204,8 +230,10 @@ describe('Waitlist (e2e)', () => {
 
   beforeEach(async () => {
     process.env.JWT_SECRET = 'test-access-secret';
+    process.env.FRONTEND_URL = 'https://book.example.com';
     serviceId = randomUUID();
     customerId = randomUUID();
+    emailQueueAdd = jest.fn().mockResolvedValue(undefined);
 
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
@@ -228,7 +256,9 @@ describe('Waitlist (e2e)', () => {
       .overrideProvider(WAITLIST_REPOSITORY)
       .useValue(new InMemoryWaitlistRepository())
       .overrideProvider(USER_REPOSITORY)
-      .useValue(new WaitlistUserRepository())
+      .useValue(new WaitlistUserRepository(customerId))
+      .overrideProvider(getQueueToken(EMAIL_NOTIFICATIONS_QUEUE))
+      .useValue({ add: emailQueueAdd })
       .overrideProvider(PrismaService)
       .useValue(createMockPrismaService())
       .overrideProvider(RedisService)
@@ -312,6 +342,23 @@ describe('Waitlist (e2e)', () => {
         expect(response.body).toHaveLength(1);
         expect(response.body[0].id).toBe(waitlistEntryId);
       });
+
+    const waitlistEmailJob = emailQueueAdd.mock.calls.find(
+      (call) =>
+        call[1]?.to === 'waitlist-customer@example.com' &&
+        call[1]?.subject === 'A time opened for Haircut',
+    );
+
+    expect(waitlistEmailJob).toBeDefined();
+    expect(waitlistEmailJob?.[0]).toBe('send-email');
+    expect(waitlistEmailJob?.[1].html).toContain('Haircut');
+    expect(waitlistEmailJob?.[1].html).toContain(
+      `https://book.example.com/book/service/${serviceId}`,
+    );
+    expect(waitlistEmailJob?.[1].html).toMatch(/not reserved/i);
+    expect(waitlistEmailJob?.[2]).toEqual(
+      expect.objectContaining({ attempts: 3 }),
+    );
 
     await request(app.getHttpServer())
       .delete(`/api/v1/me/waitlist/${waitlistEntryId}`)

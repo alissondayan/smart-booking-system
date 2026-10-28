@@ -24,5 +24,14 @@ export interface WaitlistRepositoryPort {
     serviceId: string,
     availableDate: Date,
   ): Promise<WaitlistEntryEntity | null>;
+  /**
+   * Atomically claims an ACTIVE entry by flipping it to NOTIFIED.
+   * Returns null when the row is missing or no longer ACTIVE.
+   */
   markNotified(id: string): Promise<WaitlistEntryEntity | null>;
+  /**
+   * Reverts a NOTIFIED entry back to ACTIVE after a failed email enqueue.
+   * Returns null when the row is missing or no longer NOTIFIED.
+   */
+  revertToActiveIfNotified(id: string): Promise<WaitlistEntryEntity | null>;
 }
