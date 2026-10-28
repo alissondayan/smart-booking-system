@@ -5,6 +5,7 @@ import { EmptyState } from "@/shared/ui/empty-state";
 import { ErrorState } from "@/shared/ui/error-state";
 import { StatusBadge } from "@/shared/ui/status-badge";
 import {
+  useCalendarConnectionResult,
   useCalendarStatus,
   useConnectGoogleCalendar,
   useDisconnectCalendar,
@@ -13,6 +14,7 @@ export function AdminIntegrationsPanel() {
   const status = useCalendarStatus();
   const connect = useConnectGoogleCalendar();
   const disconnect = useDisconnectCalendar();
+  const connectionNotice = useCalendarConnectionResult();
   if (status.isPending)
     return (
       <EmptyState
@@ -33,6 +35,18 @@ export function AdminIntegrationsPanel() {
         </div>
       </CardHeader>
       <CardContent className="grid gap-3">
+        {connectionNotice ? (
+          <p
+            className={
+              connectionNotice.tone === "success"
+                ? "text-sm text-green-700"
+                : "text-sm text-red-700"
+            }
+            role="status"
+          >
+            {connectionNotice.message}
+          </p>
+        ) : null}
         <p className="text-sm text-[var(--color-muted-foreground)]">
           Connect calendar sync for owner appointments. The OAuth callback is
           handled through the backend integration endpoint.

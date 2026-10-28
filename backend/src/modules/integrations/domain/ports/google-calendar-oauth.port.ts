@@ -7,6 +7,6 @@ export interface GoogleCalendarOAuthTokens {
 }
 
 export interface GoogleCalendarOAuthPort {
-  getAuthUrl(): string;
+  getAuthUrl(state: string): string;
   exchangeCode(code: string): Promise<GoogleCalendarOAuthTokens>;
 }

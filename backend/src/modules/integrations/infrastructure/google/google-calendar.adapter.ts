@@ -22,11 +22,12 @@ export class GoogleCalendarAdapter implements CalendarPort, GoogleCalendarOAuthP
     private readonly integrationRepository: CalendarIntegrationRepositoryPort,
   ) {}
 
-  getAuthUrl(): string {
+  getAuthUrl(state: string): string {
     return this.createOAuthClient().generateAuthUrl({
       access_type: 'offline',
       prompt: 'consent',
       scope: ['https://www.googleapis.com/auth/calendar.events'],
+      state,
     });
   }
 

@@ -13,9 +13,11 @@ import { CALENDAR_INTEGRATION_REPOSITORY } from './domain/ports/calendar-integra
 import { CALENDAR_PORT } from './domain/ports/calendar.port';
 import { GOOGLE_CALENDAR_OAUTH_PORT } from './domain/ports/google-calendar-oauth.port';
 import { GoogleCalendarAdapter } from './infrastructure/google/google-calendar.adapter';
+import { GoogleOAuthStateService } from './infrastructure/google/google-oauth-state.service';
 import { IcsGeneratorService } from './infrastructure/ics/ics-generator.service';
 import { PrismaCalendarIntegrationRepository } from './infrastructure/persistence/prisma-calendar-integration.repository';
 import { CalendarSyncProcessor } from './infrastructure/queue/calendar-sync.processor';
+import { CalendarOAuthController } from './presentation/calendar-oauth.controller';
 import { CalendarController } from './presentation/calendar.controller';
 import { IcsController } from './presentation/ics.controller';
 
@@ -30,9 +32,10 @@ const isTestEnvironment = process.env.NODE_ENV === 'test';
       ? []
       : [BullModule.registerQueue({ name: CALENDAR_SYNC_QUEUE })]),
   ],
-  controllers: [CalendarController, IcsController],
+  controllers: [CalendarController, CalendarOAuthController, IcsController],
   providers: [
     EncryptionService,
+    GoogleOAuthStateService,
     ConnectGoogleCalendarUseCase,
     GenerateIcsUseCase,
     SyncAppointmentToCalendarHandler,

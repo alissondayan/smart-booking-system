@@ -1,11 +1,14 @@
-import { Controller, Delete, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '../../../shared/domain/enums/user-role.enum';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../shared/presentation/decorators/current-user.decorator';
 import { Roles } from '../../../shared/presentation/decorators/roles.decorator';
 import { RolesGuard } from '../../../shared/presentation/guards/roles.guard';
 import { JwtAuthGuard } from '../../identity/infrastructure/auth/jwt-auth.guard';
 import { ConnectGoogleCalendarUseCase } from '../application/connect-google-calendar.use-case';
-import { ConnectGoogleCalendarDto } from './dto/connect-google-calendar.dto';
 import { ApiStandardErrors } from '../../../shared/presentation/swagger/api-standard-errors.decorator';
 
 @ApiTags('Admin Integrations')
@@ -27,16 +30,8 @@ export class CalendarController {
 
   @Post('google/connect')
   @ApiOkResponse({ description: 'Google OAuth authorization URL.' })
-  connect(): { authUrl: string } {
-    return this.connectGoogleCalendarUseCase.getAuthUrl();
-  }
-
-  @Get('google/callback')
-  @ApiOkResponse({ description: 'Google Calendar connected.' })
-  callbackFromQuery(
-    @Query() query: ConnectGoogleCalendarDto,
-  ): Promise<{ connected: true }> {
-    return this.connectGoogleCalendarUseCase.connect(query.code);
+  connect(@CurrentUser() user: AuthenticatedUser): { authUrl: string } {
+    return this.connectGoogleCalendarUseCase.getAuthUrl(user.id);
   }
 
   @Delete()
