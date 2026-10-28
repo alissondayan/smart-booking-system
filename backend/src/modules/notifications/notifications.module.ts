@@ -5,6 +5,7 @@ import { IdentityModule } from '../identity/identity.module';
 import { EMAIL_NOTIFICATIONS_QUEUE } from '../../shared/infrastructure/queue/queue.constants';
 import { SendBookingConfirmationHandler } from './application/send-booking-confirmation.handler';
 import { SendCancellationConfirmationHandler } from './application/send-cancellation-confirmation.handler';
+import { SendRescheduleConfirmationHandler } from './application/send-reschedule-confirmation.handler';
 import { EMAIL_PORT } from './domain/ports/email.port';
 import { NodemailerAdapter } from './infrastructure/email/nodemailer.adapter';
 import { EmailProcessor } from './infrastructure/queue/email.processor';
@@ -26,6 +27,7 @@ const isTestEnvironment = process.env.NODE_ENV === 'test';
   providers: [
     SendBookingConfirmationHandler,
     SendCancellationConfirmationHandler,
+    SendRescheduleConfirmationHandler,
     ...(isTestEnvironment
       ? [
           {
